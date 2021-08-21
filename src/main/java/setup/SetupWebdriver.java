@@ -1,6 +1,7 @@
 package setup;
 
 
+import browsers.customs.PluginChrome;
 import browsers.standard.Browser;
 import browsers.standard.StandarChrome;
 import browsers.standard.StandarEdge;
@@ -15,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SetupWebdriver {
+public abstract class SetupWebdriver {
 
     private static final String REMOTE_WEBDRIVER_URL = "http://localhost:4444/wd/hub";
     private static final int pageTimeout = 300000; // The Timeout in milliseconds when a load page expectation is called
@@ -26,6 +27,14 @@ public class SetupWebdriver {
     private String browserName = null;
     private String targetUrl = null;
     private Logger logger;
+
+    public SetupWebdriver getSetupWebDriverObject() {
+        return this;
+    }
+
+    public WebDriver getDriver() {
+        return driver;
+    }
 
     public String getTestCaseName() {
         return testCaseName;
@@ -59,9 +68,11 @@ public class SetupWebdriver {
     public void setup() {
 
         HashMap<String, Browser> browsersPool = new HashMap<>();
+        browsersPool.put("pluginChrome", new PluginChrome());
         browsersPool.put("chrome", new StandarChrome());
         browsersPool.put("firefox", new StandarFirefox());
         browsersPool.put("edge", new StandarEdge());
+
 
         Browser browser = browsersPool.get(browserName);
         driver = browser.getLocalDriver();

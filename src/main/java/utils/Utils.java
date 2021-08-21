@@ -29,20 +29,28 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@SuppressWarnings("JavaDoc")
-public class Utils extends SetupWebdriver {
 
-    /**
-     * @author Sergio Caballero
-     */
+/**
+ * @author Sergio Caballero
+ */
+
+
+public class Utils {
 
     protected static final Logger LOGGER = Logger.getLogger(Utils.class.getName());
-    private final String testCaseName;
-    private SetupWebdriver setupWebdriver;
+    protected final String testCaseName;
+    protected final WebDriver driver;
+    protected Integer explicitWait;
 
-    public Utils() {
-        testCaseName = getTestCaseName();
+    public Utils(SetupWebdriver instance) {
+        testCaseName = instance.getTestCaseName();
+        driver = instance.getDriver();
+    }
 
+    public Utils(SetupWebdriver instance, int explicitWait) {
+        testCaseName = instance.getTestCaseName();
+        driver = instance.getDriver();
+        this.explicitWait = explicitWait;
     }
 
     protected static String createFile(String fileName, long sizeMb, String linuxPath) {
@@ -132,9 +140,10 @@ public class Utils extends SetupWebdriver {
     }
 
     public static String readProperty(String key) {
-        //this method read the user/pass located in /asf-oes/config.properties
+        //this method read the user/pass located in /main/resources/config.properties
         //this method is only valid for the framework itself
-        String propertiesPath = System.getProperty("user.dir") + "/asf-oes/config.properties";
+        //String propertiesPath = System.getProperty("user.dir") + "/asf-oes/config.properties";
+        String propertiesPath = "src/main/resources/config.properties";
 
         String value = null;
 
@@ -217,6 +226,16 @@ public class Utils extends SetupWebdriver {
 
     protected void espera() {
         espera(1);
+    }
+
+    private void waitExplicitWait() {
+        try {
+            if (explicitWait != null) {
+                Thread.sleep(1000L * explicitWait);
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur");
+        }
     }
 
     protected void espera(WebElement element, int s) {
@@ -393,7 +412,7 @@ public class Utils extends SetupWebdriver {
     public boolean isElementVisibleAngular(By element, int timeoutInSeconds) {
         for (int i = 0; i < timeoutInSeconds; i++) {
             if (!isElementVisible(element, 1)) {
-                espera();
+                waitExplicitWait();
             } else {
                 return true;
             }
@@ -429,7 +448,7 @@ public class Utils extends SetupWebdriver {
         WebDriverWait wait = new WebDriverWait(driver, timeOutInSeconds);
         try {
             wait.until(ExpectedConditions.elementToBeClickable(element));
-            espera(); //needed for angular
+            waitExplicitWait();
         } catch (TimeoutException e) {
             LOGGER.log(Level.SEVERE, String.format("Element not clickable for: '%s'", testCaseName));
             Assert.fail("Element might not be located && visible && clickable");
@@ -441,7 +460,7 @@ public class Utils extends SetupWebdriver {
         WebDriverWait image = new WebDriverWait(driver, timeOutInSeconds);
         try {
             image.until(ExpectedConditions.visibilityOfElementLocated(element));
-            espera(); //needed for angular
+            waitExplicitWait();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, String.format("Element not visible for: '%s'", testCaseName));
             Assert.fail("Element is not visible");
@@ -455,7 +474,7 @@ public class Utils extends SetupWebdriver {
     public void waitForInvisible(By element, int timeOutInSeconds) {
         WebDriverWait image = new WebDriverWait(driver, timeOutInSeconds);
         image.until(ExpectedConditions.invisibilityOfElementLocated(element));
-        espera(); //needed for angular
+        waitExplicitWait();
     }
 
     public void waitForNumberOfWindows(int numberOfWindows) {
@@ -470,7 +489,7 @@ public class Utils extends SetupWebdriver {
             }
         };
         wait.until(expectation);
-        espera(); //needed for angular
+        waitExplicitWait();
     }
 
     public void waitForJSandJqueryFinish(int timeoutInSeconds) {
@@ -494,7 +513,7 @@ public class Utils extends SetupWebdriver {
             }
         };
         boolean waitFlag = wait.until(jQueryLoad) && wait.until(jsLoad);
-        espera(); //needed for angular
+        waitExplicitWait();
     }
 
     public void sendKeysAndTrigger(WebElement element, String keys) {
@@ -663,7 +682,7 @@ public class Utils extends SetupWebdriver {
     }
 
     @Step("{1}}")
-    public void assertTrue(Boolean bol, String checkMessage) throws URISyntaxException, IOException, AssertionError {
+    public void assertTrue(Boolean bol, String checkMessage) throws AssertionError {
         try {
             Assert.assertTrue(bol, checkMessage);
         } catch (AssertionError e) {
@@ -672,9 +691,9 @@ public class Utils extends SetupWebdriver {
     }
 
     @Step("{3}}")
-    public void assertEquals(String condition1, String condition2, String assertMessage) throws URISyntaxException, IOException, AssertionError {
+    public void assertEquals(String condition1, String condition2, String assertMessage) throws AssertionError {
         try {
-            Assert.assertEquals(condition1, condition2, null);
+            Assert.assertEquals(condition1, condition2, assertMessage);
             // return true;
         } catch (AssertionError | Exception e) {
             throw new AssertionError(e.getMessage());
