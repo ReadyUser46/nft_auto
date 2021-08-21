@@ -18,9 +18,9 @@ import java.util.logging.Logger;
 public class SetupWebdriver {
 
     private static final String REMOTE_WEBDRIVER_URL = "http://localhost:4444/wd/hub";
-    private static final int pageTimeout = 300000; // The Timeout in miliseconds when a load page expectation is called
-    private static final int implicitTimeout = 20000; // The Timeout in miliseconds when an implicit expectation is called
-    private static final int scriptTimeout = 600000; // The script Timeout in miliseconds when a load script expectation is called
+    private static final int pageTimeout = 300000; // The Timeout in milliseconds when a load page expectation is called
+    private static final int implicitTimeout = 20000; // The Timeout in milliseconds when an implicit expectation is called
+    private static final int scriptTimeout = 600000; // The script Timeout in milliseconds when a load script expectation is called
     protected WebDriver driver;
     private String testCaseName;
     private String browserName = null;
@@ -58,12 +58,12 @@ public class SetupWebdriver {
     @BeforeMethod(alwaysRun = true)
     public void setup() {
 
-        HashMap<String, Browser> selectBrower = new HashMap<>();
-        selectBrower.put("chrome", new StandarChrome());
-        selectBrower.put("firefox", new StandarFirefox());
-        selectBrower.put("edge", new StandarEdge());
+        HashMap<String, Browser> browsersPool = new HashMap<>();
+        browsersPool.put("chrome", new StandarChrome());
+        browsersPool.put("firefox", new StandarFirefox());
+        browsersPool.put("edge", new StandarEdge());
 
-        Browser browser = selectBrower.get(browserName);
+        Browser browser = browsersPool.get(browserName);
         driver = browser.getLocalDriver();
 
         /*manage timeouts*/
