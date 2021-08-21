@@ -41,6 +41,7 @@ public class MetamaskPage extends Utils {
     @Step("Connect Metamask wallet")
     public void connectMetamask() {
         String win = driver.getWindowHandle();
+        waitForNumberOfWindows(2);
         changeToNextWindow();
         //select account
         selectAccount();
@@ -49,25 +50,26 @@ public class MetamaskPage extends Utils {
         //sign
         signWallet();
         //return to pvu farm win
+        waitForNumberOfWindows(1);
         driver.switchTo().window(win);
     }
 
     private void selectAccount() {
         if (isElementVisibleAngular(By.xpath(BUTTON_NEXT_XPATH), 2)) {
             getNextButton().click();
-        }
+        } else LOGGER.info("Account already selected");
     }
 
     private void connectWallet() {
         if (isElementVisibleAngular(By.xpath(BUTTON_CONNECT_XPATH), 2)) {
             getConnectButton().click();
-        }
+        } else LOGGER.info("Wallet already connected");
     }
 
     private void signWallet() {
         if (isElementVisibleAngular(By.xpath(BUTTON_SIGN_XPATH), 2)) {
             getSignButton().click();
-        }
+        } else LOGGER.info("Wallet already signed");
     }
 
     //AUX METHODS

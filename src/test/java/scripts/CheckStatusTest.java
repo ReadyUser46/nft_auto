@@ -4,6 +4,7 @@ import baseobjects.BaseTest;
 import org.testng.annotations.Test;
 import pageobjects.MetamaskPage;
 import pageobjects.PvuFarmPage;
+import pageobjects.PvuLoginPage;
 
 public class CheckStatusTest extends BaseTest {
 
@@ -18,23 +19,29 @@ public class CheckStatusTest extends BaseTest {
     @Test
     public void checkStatus() {
         MetamaskPage metamaskPage = new MetamaskPage(getSetupWebDriverObject());
+        PvuLoginPage pvuLoginPage = new PvuLoginPage(getSetupWebDriverObject());
         PvuFarmPage pvuFarmPage = new PvuFarmPage(getSetupWebDriverObject());
 
         //login metamask
         metamaskPage.loginMetamask();
 
         //login pvu farm
-        pvuFarmPage.goToPvuFarm();
-        pvuFarmPage.loginPvuFarm();
+        pvuLoginPage.goToPvuFarm();
+        pvuLoginPage.loginPvuFarm();
 
         //connect metamask
         metamaskPage.connectMetamask();
 
         //check login puv ok
-        utils.assertTrue(pvuFarmPage.isDashBoardDisplayed(), "Verifying login succesfully done");
+        utils.assertTrue(pvuLoginPage.isDashBoardDisplayed(), "Verifying login succesfully done");
 
         //pvu farm
-        pvuFarmPage.clickFarmTab();
+        pvuLoginPage.clickFarmTab();
 
+        //todo assert
+        pvuFarmPage.clickMap();
+        pvuFarmPage.loopCells();
+
+        System.out.println("tork");
     }
 }
