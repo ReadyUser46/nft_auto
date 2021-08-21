@@ -1,6 +1,5 @@
 package browsers.customs;
 
-import browsers.BrowserCapability;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -8,12 +7,11 @@ import org.openqa.selenium.remote.CapabilityType;
 
 import java.util.HashMap;
 
-public class CustomChrome extends BrowserCapability {
+public class CustomChrome {
   private static final ChromeOptions chromeOptions = new ChromeOptions();
   Proxy proxy = new Proxy();
 
   public CustomChrome(String proxyPac, String nodeName, String seleniumVersion, boolean validatePDF) {
-    super(chromeOptions);
     chromeOptions.setCapability("browserName", "chrome");
     chromeOptions.setCapability("platform", Platform.LINUX);
     proxy.setProxyAutoconfigUrl(proxyPac);

@@ -1,23 +1,21 @@
 package browsers.customs;
 
-import browsers.BrowserCapability;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 
-public class CustomEdge extends BrowserCapability {
+public class CustomEdge {
   private static final EdgeOptions edgeOptions = new EdgeOptions();
   Proxy proxy = new Proxy();
 
   public CustomEdge(String proxyPac, String node, String seleniumVersion) {
-    super(edgeOptions);
     proxy.setProxyAutoconfigUrl(proxyPac);
     edgeOptions.setProxy(proxy);
     edgeOptions.setCapability("platform", Platform.ANY);
 
     if (!node.isEmpty()) {
-      super.setCapability("applicationName", node);
+      edgeOptions.setCapability("applicationName", node);
     }
 
     /*Needed to avoid initial screen 'your connection is not private..'*/

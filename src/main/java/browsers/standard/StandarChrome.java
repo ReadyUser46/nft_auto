@@ -1,15 +1,17 @@
 package browsers.standard;
 
-import browsers.BrowserCapability;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
-public class StandarChrome extends BrowserCapability implements Browser {
-  private static final ChromeOptions chromeOptions = new ChromeOptions();
+import java.net.MalformedURLException;
+import java.net.URL;
+
+public class StandarChrome implements Browser {
+  private final ChromeOptions chromeOptions = new ChromeOptions();
 
   public StandarChrome() {
-    super(chromeOptions);
   }
 
   @Override
@@ -20,6 +22,10 @@ public class StandarChrome extends BrowserCapability implements Browser {
   @Override
   public WebDriver getLocalDriver() {
     System.setProperty("webdriver.chrome.driver", "C:\\Selenium\\drivers\\chromedriver.exe");
-    return new ChromeDriver();
+    return new ChromeDriver(chromeOptions);
+  }
+
+  public WebDriver getRemoteWebdriver(String remoteWebDriverURl) throws MalformedURLException {
+    return new RemoteWebDriver(new URL(remoteWebDriverURl), chromeOptions);
   }
 }

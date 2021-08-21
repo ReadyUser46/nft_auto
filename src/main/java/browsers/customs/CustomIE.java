@@ -1,17 +1,15 @@
 package browsers.customs;
 
-import browsers.BrowserCapability;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 
 import java.util.LinkedHashMap;
 
-public class CustomIE extends BrowserCapability {
+public class CustomIE {
     private static final InternetExplorerOptions iexplorerOptions = new InternetExplorerOptions();
     Proxy proxy = new Proxy();
 
     public CustomIE(String proxyPac, String node) {
-        super(iexplorerOptions);
         LinkedHashMap<String, Integer> mapTimeoutCapabilities = getMapTimeoutCapabilities();
         iexplorerOptions.setCapability("timeouts", mapTimeoutCapabilities);
         iexplorerOptions.introduceFlakinessByIgnoringSecurityDomains();
@@ -21,7 +19,7 @@ public class CustomIE extends BrowserCapability {
         iexplorerOptions.ignoreZoomSettings();
 
         if (!node.isEmpty()) {
-      super.setCapability("applicationName", node);
+            iexplorerOptions.setCapability("applicationName", node);
     }
   }
 
