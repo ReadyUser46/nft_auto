@@ -55,13 +55,13 @@ public class MetamaskPage extends Utils {
     }
 
     private void selectAccount() {
-        if (isElementVisibleAngular(By.xpath(BUTTON_NEXT_XPATH), 2)) {
+        if (isElementVisibleAngular(By.xpath(BUTTON_NEXT_XPATH), 1)) {
             getNextButton().click();
         } else LOGGER.info("Account already selected");
     }
 
     private void connectWallet() {
-        if (isElementVisibleAngular(By.xpath(BUTTON_CONNECT_XPATH), 2)) {
+        if (isElementVisibleAngular(By.xpath(BUTTON_CONNECT_XPATH), 1)) {
             getConnectButton().click();
         } else LOGGER.info("Wallet already connected");
     }
@@ -69,6 +69,7 @@ public class MetamaskPage extends Utils {
     private void signWallet() {
         if (isElementVisibleAngular(By.xpath(BUTTON_SIGN_XPATH), 2)) {
             getSignButton().click();
+            LOGGER.info("Wallet successfully connected");
         } else LOGGER.info("Wallet already signed");
     }
 

@@ -2,6 +2,8 @@ package pageobjects;
 
 import io.qameta.allure.Step;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import setup.SetupWebdriver;
 import utils.Utils;
@@ -10,18 +12,21 @@ import java.util.List;
 
 public class PvuFarmPage extends Utils {
 
-    private static final int cellLimit = 1000;
-    private static final int humanWait = 30;
+    private static final int cellStart = 571;
+    private static final int cellLimit = 500;
+    private static final int humanWait = 1;
     private static final int waterLimit = 90;
-    //LOCATORS - XPATH
-    private static final String BUTTON_MAP_XPATH = "//*[@src='/_nuxt/img/map@3x.8210b63.png']";
+
 
     public PvuFarmPage(SetupWebdriver setupWebdriver, Integer explicitWait) {
         super(setupWebdriver, explicitWait);
     }
 
-
     //LOCATORS - ID
+    private static final String LOADING_PAGE_ID = "loader-1";
+
+    //LOCATORS - XPATH
+    private static final String BUTTON_MAP_XPATH = "//*[@src='/_nuxt/img/map@3x.8210b63.png']";
     private static final String CELLS_MAP_XPATH = "//*[@class='farm-map-cell']";
     private static final String BUTTON_VISIT_XPATH = "//div[@class='tw-inline-block button_div']//button[text()='Visit']";
     private static final String TEXT_NUM_WATERS_XPATH = "//img[@src='/_nuxt/img/water@3x.d5ca50d.png']//following-sibling::div[@class='plant-attr-number']//span[@class='small']";
@@ -29,6 +34,7 @@ public class PvuFarmPage extends Utils {
     private static final String TEXT_NUM_PAGES_XPATH = "//p[contains(text(),'of')]";
     private static final String BUTTON_NEXT_PAGE_XPATH = "//*[@src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xNy42MDk1IDcuMzkwNTJDMTcuMDg4OCA2Ljg2OTgzIDE2LjI0NDUgNi44Njk4MyAxNS43MjM4IDcuMzkwNTJDMTUuMjAzMSA3LjkxMTIyIDE1LjIwMzEgOC43NTU0NCAxNS43MjM4IDkuMjc2MTRMMjAuNDQ3NyAxNEg3LjVDNi42NzE1NyAxNCA2IDE0LjY3MTYgNiAxNS41QzYgMTYuMzI4NCA2LjY3MTU3IDE3IDcuNSAxN0gyMC43ODFMMTUuNzIzOCAyMi4wNTcyQzE1LjIwMzEgMjIuNTc3OSAxNS4yMDMxIDIzLjQyMjEgMTUuNzIzOCAyMy45NDI4QzE2LjI0NDUgMjQuNDYzNSAxNy4wODg4IDI0LjQ2MzUgMTcuNjA5NSAyMy45NDI4TDI0Ljk0MjggMTYuNjA5NUMyNS40NjM1IDE2LjA4ODggMjUuNDYzNSAxNS4yNDQ2IDI0Ljk0MjggMTQuNzIzOUwxNy42MDk1IDcuMzkwNTJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K']";
     private static final String POPUP_SINGLE_CELL_XPATH = "//*[@src='/_nuxt/img/land_3d.34549cc.svg']";
+    private static final String TEXT_OWNER_TITLE_XPATH = "//*[@class='owner-title']";
 
     //Constructors
     public PvuFarmPage(SetupWebdriver setupWebdriver) {
@@ -40,9 +46,17 @@ public class PvuFarmPage extends Utils {
     //ACTIONS
     @Step("Click on map")
     public void clickMap() {
-        waitForClickable(By.xpath(BUTTON_MAP_XPATH));
-        getMapButton().click();
-        waitForJSandJqueryFinish();
+        try {
+            waitForClickable(By.xpath(BUTTON_MAP_XPATH));
+            getMapButton().click();
+            waitForJSandJqueryFinish();
+        } catch (ElementClickInterceptedException e) {
+            LOGGER.severe(String.format(" MAP MAP MAP MAP MAP\nclick intercepeted in --> %s", "click map"));
+            waitForClickable(By.xpath(BUTTON_MAP_XPATH));
+            getMapButton().click();
+
+        }
+
     }
 
     @Step("Visiting Land")
@@ -61,21 +75,41 @@ public class PvuFarmPage extends Utils {
 
     @Step("Go next page")
     public void clickNextPage() {
-        waitForClickable(By.xpath(BUTTON_NEXT_PAGE_XPATH));
-        getNextPageButton().click();
-        waitForJSandJqueryFinish();
+        try {
+            waitForClickable(By.xpath(BUTTON_NEXT_PAGE_XPATH));
+            getNextPageButton().click();
+            waitForJSandJqueryFinish(); //todo wait invisible loading
+            espera();
+      /*      while (isElementVisibleAngularMS(By.id(LOADING_PAGE_ID), 5)) {
+                sleepms(200);
+            }*/
+        } catch (ElementClickInterceptedException e) {
+            LOGGER.severe(String.format(" click intercepeted in --> %s", "click next"));
+
+        }
     }
 
+    @Step("Loop through cells")
     public void loopCells() {
-        List<WebElement> cells = driver.findElements(By.xpath(CELLS_MAP_XPATH));
+        List<WebElement> cells;
+        int numCells = driver.findElements(By.xpath(CELLS_MAP_XPATH)).size();
 
-        for (int i = (cells.size() - 1); i > cellLimit; i--) {
-            cells.get(i).click();
-            waitForVisible(By.xpath(POPUP_SINGLE_CELL_XPATH));
-            if (isElementLocated(By.xpath(BUTTON_VISIT_XPATH), 1)) {
-                clickVisit();
-                checkPages();
+        try {
+            for (int i = cellStart; i > cellLimit; i--) {
+                LOGGER.info(String.format("Looping through CELL --> %s/%s ", i, numCells));
+                cells = driver.findElements(By.xpath(CELLS_MAP_XPATH));
+                cells.get(i).click();
+                waitForVisible(By.xpath(POPUP_SINGLE_CELL_XPATH));
+                if (isElementLocated(By.xpath(BUTTON_VISIT_XPATH), 1)) {
+                    clickVisit();
+                    checkPages();
+                } else {
+                    driver.navigate().refresh();
+                }
             }
+        } catch (StaleElementReferenceException e) {
+            LOGGER.severe(String.format(" = stale element reference in --> %s", "loop cells"));
+
         }
     }
 
@@ -84,32 +118,44 @@ public class PvuFarmPage extends Utils {
         for (int j = 0; j < getNumPages(); j++) {
             LOGGER.info(String.format("Looping through PAGE --> %s/%s ", j + 1, getNumPages()));
             checkWater();
-            clickNextPage();
+            if (j < getNumPages()) { /*click next page if current page is not last one*/
+                clickNextPage();
+            }
         }
+        clickMap();
     }
 
     private void checkWater() {
         List<WebElement> waters = driver.findElements(By.xpath(TEXT_NUM_WATERS_XPATH));
         LOGGER.info(String.format("Number of PLANTS detected in current page =  %s", waters.size()));
 
-        for (int k = 0; k < waters.size(); k++) {
-            LOGGER.info(String.format("Looping through PLANT %s/%s with WATER = %s", k + 1, waters.size(), waters.get(k).getText()));
+        try {
+            for (int k = 0; k < waters.size(); k++) {
+                LOGGER.info(String.format("Looping through PLANT %s/%s with WATER = %s", k + 1, waters.size(), waters.get(k).getText()));
 
-            if (Integer.parseInt(waters.get(k).getText()) <= PvuFarmPage.waterLimit) {
-                LOGGER.info(String.format("[POSITIVE] WATER = %s | Under limite = %s", waters.get(k).getText(), waterLimit));
-                waters.get(k).click();
-                clickUseWater();
-                espera(PvuFarmPage.humanWait);
-                //todo capcha
+                if (Integer.parseInt(waters.get(k).getText()) <= PvuFarmPage.waterLimit) {
+                    LOGGER.warning(String.format("[ATENTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]\n" +
+                            "[POSITIVE] WATER = %s in PLANT %s| Under limite = %s", waters.get(k).getText(), k, waterLimit));
+                    waters.get(k).click();
+                    clickUseWater();
+                    espera(PvuFarmPage.humanWait);
+
+                    //todo capcha and click background when congrants windows is displayed
+                }
             }
+        } catch (StaleElementReferenceException e) {
+            LOGGER.severe(String.format(" = stale element reference in --> %s", "loop plants"));
+
         }
     }
 
 
     //AUX METHODS
     public int getNumPages() {
-        waitForVisible(By.xpath(TEXT_NUM_PAGES_XPATH));
-        return Integer.parseInt(getNumPagesText().getText().replace("of ", ""));
+        waitForVisible(By.xpath(TEXT_OWNER_TITLE_XPATH));
+        if (isElementVisible(By.xpath(TEXT_NUM_PAGES_XPATH), 1)) {
+            return Integer.parseInt(getNumPagesText().getText().replace("of ", ""));
+        } else return 1;
     }
 
     //WEBELEMENTS

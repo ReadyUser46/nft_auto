@@ -224,6 +224,14 @@ public class Utils {
         }
     }
 
+    protected void sleepms(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Exception occur");
+        }
+    }
+
     protected void espera() {
         espera(1);
     }
@@ -412,7 +420,7 @@ public class Utils {
     public boolean isElementVisibleAngular(By element, int timeoutInSeconds) {
         for (int i = 0; i < timeoutInSeconds; i++) {
             if (!isElementVisible(element, 1)) {
-                waitExplicitWait();
+                espera();
             } else {
                 return true;
             }
@@ -420,8 +428,32 @@ public class Utils {
         return false;
     }
 
+    public boolean isElementVisibleAngularMS(By element, int timeoutInSeconds) {
+        for (int i = 0; i < timeoutInSeconds; i++) {
+            if (!isElementVisibleMS(element, 200)) {
+                sleepms(200);
+            } else {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isElementVisibleMS(By element, int timeoutInMS) {
+        if (isElementLocatedMS(element, timeoutInMS)) { //First, we check the element is located
+            return driver.findElement(element).isDisplayed();
+        } else return false;
+    }
+
     public boolean isElementLocated(By element, int timeoutInSeconds) { //locates an element
         driver.manage().timeouts().implicitlyWait(timeoutInSeconds, TimeUnit.SECONDS);
+        boolean exists = !driver.findElements(element).isEmpty();
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        return exists;
+    }
+
+    public boolean isElementLocatedMS(By element, int timeoutInMillisecons) { //locates an element
+        driver.manage().timeouts().implicitlyWait(timeoutInMillisecons, TimeUnit.MILLISECONDS);
         boolean exists = !driver.findElements(element).isEmpty();
         driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
         return exists;

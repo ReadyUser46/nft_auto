@@ -6,18 +6,18 @@ import pageobjects.MetamaskPage;
 import pageobjects.PvuFarmPage;
 import pageobjects.PvuLoginPage;
 
-public class CheckStatusTest extends BaseTest {
+public class SeekWaterTest extends BaseTest {
 
     private static final String testCaseName = "Check Status";
     private static final String targetUrl = "https://marketplace.plantvsundead.com/farm#/farm";
     private static final Integer explicitWait = 1;
 
-    public CheckStatusTest() {
+    public SeekWaterTest() {
         super(testCaseName);
     }
 
     @Test
-    public void checkStatus() {
+    public void seekWater() {
         MetamaskPage metamaskPage = new MetamaskPage(getSetupWebDriverObject());
         PvuLoginPage pvuLoginPage = new PvuLoginPage(getSetupWebDriverObject());
         PvuFarmPage pvuFarmPage = new PvuFarmPage(getSetupWebDriverObject());
@@ -38,7 +38,7 @@ public class CheckStatusTest extends BaseTest {
         //pvu farm
         pvuLoginPage.clickFarmTab();
 
-        //todo assert
+        //pvu map
         pvuFarmPage.clickMap();
         pvuFarmPage.loopCells();
 
