@@ -9,13 +9,15 @@ import setup.SetupWebdriver;
 import utils.Utils;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 public class PvuFarmPage extends Utils {
 
-    private static final int cellStart = 571;
+    private static final int cellStart = 593;
     private static final int cellLimit = 500;
-    private static final int humanWait = 1;
     private static final int waterLimit = 90;
+    private int plantsCounter = 0;
 
 
     public PvuFarmPage(SetupWebdriver setupWebdriver, Integer explicitWait) {
@@ -43,20 +45,18 @@ public class PvuFarmPage extends Utils {
 
     //CHECKS
 
-    //ACTIONS
-    @Step("Click on map")
-    public void clickMap() {
+    private static void waitForUserInput() {
+        Scanner scanner = new Scanner(System.in);
         try {
-            waitForClickable(By.xpath(BUTTON_MAP_XPATH));
-            getMapButton().click();
-            waitForJSandJqueryFinish();
-        } catch (ElementClickInterceptedException e) {
-            LOGGER.severe(String.format(" MAP MAP MAP MAP MAP\nclick intercepeted in --> %s", "click map"));
-            waitForClickable(By.xpath(BUTTON_MAP_XPATH));
-            getMapButton().click();
-
+            while (true) {
+                System.out.print("Exception Thrown %s. Script safe to continue?: ");
+                String line = scanner.nextLine();
+                System.out.printf("User input was: %s%n", line);
+            }
+        } catch (IllegalStateException | NoSuchElementException e) {
+            // System.in has been closed
+            System.out.println("System.in was closed; exiting");
         }
-
     }
 
     @Step("Visiting Land")
@@ -73,20 +73,19 @@ public class PvuFarmPage extends Utils {
         waitForJSandJqueryFinish();
     }
 
-    @Step("Go next page")
-    public void clickNextPage() {
+    //ACTIONS
+    @Step("Click on map")
+    public void clickMap() {
         try {
-            waitForClickable(By.xpath(BUTTON_NEXT_PAGE_XPATH));
-            getNextPageButton().click();
-            waitForJSandJqueryFinish(); //todo wait invisible loading
-            espera();
-      /*      while (isElementVisibleAngularMS(By.id(LOADING_PAGE_ID), 5)) {
-                sleepms(200);
-            }*/
+            waitForClickable(By.xpath(BUTTON_MAP_XPATH));
+            getMapButton().click();
+            waitForJSandJqueryFinish();
         } catch (ElementClickInterceptedException e) {
-            LOGGER.severe(String.format(" click intercepeted in --> %s", "click next"));
-
+            LOGGER.severe(String.format(" MAP MAP MAP MAP MAP\nclick intercepeted in --> %s", "click map"));
+            espera(8); //time to solve the issue before script tears down
+            getMapButton().click();
         }
+
     }
 
     @Step("Loop through cells")
@@ -99,9 +98,11 @@ public class PvuFarmPage extends Utils {
                 LOGGER.info(String.format("Looping through CELL --> %s/%s ", i, numCells));
                 cells = driver.findElements(By.xpath(CELLS_MAP_XPATH));
                 cells.get(i).click();
+                waitPvuLoads();
                 waitForVisible(By.xpath(POPUP_SINGLE_CELL_XPATH));
                 if (isElementLocated(By.xpath(BUTTON_VISIT_XPATH), 1)) {
                     clickVisit();
+                    waitPvuLoads();
                     checkPages();
                 } else {
                     driver.navigate().refresh();
@@ -115,12 +116,12 @@ public class PvuFarmPage extends Utils {
 
     private void checkPages() {
         LOGGER.info("Number of pages detected = " + getNumPages());
-        for (int j = 0; j < getNumPages(); j++) {
+        for (int j = 0; j <= getNumPages() - 1; j++) {
             LOGGER.info(String.format("Looping through PAGE --> %s/%s ", j + 1, getNumPages()));
             checkWater();
-            if (j < getNumPages()) { /*click next page if current page is not last one*/
-                clickNextPage();
-            }
+            if (j == getNumPages() || getNumPages() == 1) { /*dont click next page if current page is last one or there's only one page*/
+                break;
+            } else clickNextPage();
         }
         clickMap();
     }
@@ -132,15 +133,15 @@ public class PvuFarmPage extends Utils {
         try {
             for (int k = 0; k < waters.size(); k++) {
                 LOGGER.info(String.format("Looping through PLANT %s/%s with WATER = %s", k + 1, waters.size(), waters.get(k).getText()));
+                plantsCounter++;
 
                 if (Integer.parseInt(waters.get(k).getText()) <= PvuFarmPage.waterLimit) {
                     LOGGER.warning(String.format("[ATENTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]\n" +
                             "[POSITIVE] WATER = %s in PLANT %s| Under limite = %s", waters.get(k).getText(), k, waterLimit));
+                    scrollToElement(waters.get(k));
                     waters.get(k).click();
                     clickUseWater();
-                    espera(PvuFarmPage.humanWait);
-
-                    //todo capcha and click background when congrants windows is displayed
+                    waitForUserInput(); //todo manually click background when congrants windows is displayed
                 }
             }
         } catch (StaleElementReferenceException e) {
@@ -149,11 +150,22 @@ public class PvuFarmPage extends Utils {
         }
     }
 
+    public void clickNextPage() {
+        try {
+            waitForClickable(By.xpath(BUTTON_NEXT_PAGE_XPATH));
+            getNextPageButton().click();
+            waitForJSandJqueryFinish(); //todo wait invisible loading
+            waitPvuLoads();
+        } catch (ElementClickInterceptedException e) {
+            LOGGER.severe(String.format(" click intercepeted in --> %s", "click next"));
+
+        }
+    }
 
     //AUX METHODS
     public int getNumPages() {
         waitForVisible(By.xpath(TEXT_OWNER_TITLE_XPATH));
-        if (isElementVisible(By.xpath(TEXT_NUM_PAGES_XPATH), 1)) {
+        if (isElementVisibleMS(By.xpath(TEXT_NUM_PAGES_XPATH), 500)) {
             return Integer.parseInt(getNumPagesText().getText().replace("of ", ""));
         } else return 1;
     }
@@ -185,6 +197,10 @@ public class PvuFarmPage extends Utils {
 
     private WebElement getMapCells() {
         return driver.findElement(By.xpath(CELLS_MAP_XPATH));
+    }
+
+    public int getPlantsCounter() {
+        return plantsCounter;
     }
 
 

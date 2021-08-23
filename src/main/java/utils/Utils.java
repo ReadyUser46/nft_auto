@@ -471,6 +471,14 @@ public class Utils {
         ((JavascriptExecutor) driver).executeScript(funcion);
     }
 
+    public void waitPvuLoads() {
+        do {
+            System.out.println("Waiting 1.5s until page loads");
+            sleepms(1500);
+        }
+        while (isElementVisibleAngularMS(By.id("loader-1"), 5));
+    }
+
     public void waitForInvisible(By element) {
         waitForInvisible(element, 60);
     }
@@ -689,6 +697,10 @@ public class Utils {
 
     public void scrollToElement(By by) {
         WebElement element = driver.findElement(by);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    public void scrollToElement(WebElement element) {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
     }
 
