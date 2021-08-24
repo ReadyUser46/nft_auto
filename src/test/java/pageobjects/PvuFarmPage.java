@@ -11,14 +11,21 @@ import utils.Utils;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class PvuFarmPage extends Utils {
 
-    private static final int cellStart = 593;
-    private static final int cellLimit = 500;
+    private static final int cellStart = 693;
+    private static final int cellLimit = 600;
     private static final int waterLimit = 90;
     private int plantsCounter = 0;
+    private Logger logger;
 
+    //Constructors
+    public PvuFarmPage(SetupWebdriver setupWebdriver) {
+        super(setupWebdriver);
+        logger = Logger.getLogger(PvuFarmPage.class.getName());
+    }
 
     public PvuFarmPage(SetupWebdriver setupWebdriver, Integer explicitWait) {
         super(setupWebdriver, explicitWait);
@@ -38,13 +45,9 @@ public class PvuFarmPage extends Utils {
     private static final String POPUP_SINGLE_CELL_XPATH = "//*[@src='/_nuxt/img/land_3d.34549cc.svg']";
     private static final String TEXT_OWNER_TITLE_XPATH = "//*[@class='owner-title']";
 
-    //Constructors
-    public PvuFarmPage(SetupWebdriver setupWebdriver) {
-        super(setupWebdriver);
-    }
+
 
     //CHECKS
-
     private static void waitForUserInput() {
         Scanner scanner = new Scanner(System.in);
         try {
@@ -81,7 +84,7 @@ public class PvuFarmPage extends Utils {
             getMapButton().click();
             waitForJSandJqueryFinish();
         } catch (ElementClickInterceptedException e) {
-            LOGGER.severe(String.format(" MAP MAP MAP MAP MAP\nclick intercepeted in --> %s", "click map"));
+            logger.severe(String.format(" MAP MAP MAP MAP MAP\nclick intercepeted in --> %s", "click map"));
             espera(8); //time to solve the issue before script tears down
             getMapButton().click();
         }
@@ -95,7 +98,7 @@ public class PvuFarmPage extends Utils {
 
         try {
             for (int i = cellStart; i > cellLimit; i--) {
-                LOGGER.info(String.format("Looping through CELL --> %s/%s ", i, numCells));
+                logger.info(String.format("Looping through CELL --> %s/%s ", i, numCells));
                 cells = driver.findElements(By.xpath(CELLS_MAP_XPATH));
                 cells.get(i).click();
                 waitPvuLoads();
@@ -109,15 +112,15 @@ public class PvuFarmPage extends Utils {
                 }
             }
         } catch (StaleElementReferenceException e) {
-            LOGGER.severe(String.format(" = stale element reference in --> %s", "loop cells"));
+            logger.severe(String.format(" = stale element reference in --> %s", "loop cells"));
 
         }
     }
 
     private void checkPages() {
-        LOGGER.info("Number of pages detected = " + getNumPages());
+        logger.info("Number of pages detected = " + getNumPages());
         for (int j = 0; j <= getNumPages() - 1; j++) {
-            LOGGER.info(String.format("Looping through PAGE --> %s/%s ", j + 1, getNumPages()));
+            logger.info(String.format("Looping through PAGE --> %s/%s ", j + 1, getNumPages()));
             checkWater();
             if (j == getNumPages() || getNumPages() == 1) { /*dont click next page if current page is last one or there's only one page*/
                 break;
@@ -128,25 +131,24 @@ public class PvuFarmPage extends Utils {
 
     private void checkWater() {
         List<WebElement> waters = driver.findElements(By.xpath(TEXT_NUM_WATERS_XPATH));
-        LOGGER.info(String.format("Number of PLANTS detected in current page =  %s", waters.size()));
+        logger.info(String.format("Number of PLANTS detected in current page =  %s", waters.size()));
 
         try {
             for (int k = 0; k < waters.size(); k++) {
-                LOGGER.info(String.format("Looping through PLANT %s/%s with WATER = %s", k + 1, waters.size(), waters.get(k).getText()));
+                logger.info(String.format("Looping through PLANT %s/%s with WATER = %s", k + 1, waters.size(), waters.get(k).getText()));
                 plantsCounter++;
 
                 if (Integer.parseInt(waters.get(k).getText()) <= PvuFarmPage.waterLimit) {
-                    LOGGER.warning(String.format("[ATENTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]\n" +
+                    logger.warning(String.format("[ATENTION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]\n" +
                             "[POSITIVE] WATER = %s in PLANT %s| Under limite = %s", waters.get(k).getText(), k, waterLimit));
                     scrollToElement(waters.get(k));
                     waters.get(k).click();
                     clickUseWater();
-                    waitForUserInput(); //todo manually click background when congrants windows is displayed
+                    //waitForUserInput(); //todo manually click background when congrants windows is displayed
                 }
             }
         } catch (StaleElementReferenceException e) {
-            LOGGER.severe(String.format(" = stale element reference in --> %s", "loop plants"));
-
+            logger.severe(String.format(" = stale element reference in --> %s", "loop plants"));
         }
     }
 
@@ -157,7 +159,7 @@ public class PvuFarmPage extends Utils {
             waitForJSandJqueryFinish(); //todo wait invisible loading
             waitPvuLoads();
         } catch (ElementClickInterceptedException e) {
-            LOGGER.severe(String.format(" click intercepeted in --> %s", "click next"));
+            logger.severe(String.format(" click intercepeted in --> %s", "click next"));
 
         }
     }

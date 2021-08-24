@@ -83,6 +83,8 @@ public abstract class SetupWebdriver {
         driver.manage().timeouts().setScriptTimeout(scriptTimeout, TimeUnit.MILLISECONDS);
 
         /*Logger*/
+        System.setProperty("java.util.logging.SimpleFormatter.format", //[2021-08-23][20:52:19] INFO: info
+                "[%1$tF][%1$tT] %4$s: %5$s%n");
         setLogger(Logger.getLogger("setup"));
         customLog().info(String.format("\n[INIT] Test case = '%s' will be executed\n" +
                         "[INIT] Browser = '%s' | Target url = %s\n" +

@@ -473,8 +473,8 @@ public class Utils {
 
     public void waitPvuLoads() {
         do {
-            System.out.println("Waiting 1.5s until page loads");
-            sleepms(1500);
+            System.out.println("Waiting 800ms until page loads");
+            sleepms(800);
         }
         while (isElementVisibleAngularMS(By.id("loader-1"), 5));
     }
