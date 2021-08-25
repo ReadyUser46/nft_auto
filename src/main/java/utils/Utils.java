@@ -139,7 +139,24 @@ public class Utils {
         return matricula;
     }
 
-    public static String readProperty(String key) {
+    public void setProperty(String key, String value) {
+
+        String propertiesPath = "src/main/resources/config.properties";
+
+        if (!new File(propertiesPath).exists()) {
+            createPropertyFile_new(propertiesPath);
+        }
+
+        try {
+            PropertiesConfiguration config = new PropertiesConfiguration(propertiesPath);
+            config.setProperty(key, value);
+            config.save();
+        } catch (ConfigurationException e) {
+            LOGGER.log(Level.SEVERE, "Exception occur", e);
+        }
+    }
+
+    public String readProperty(String key) {
         //this method read the user/pass located in /main/resources/config.properties
         //this method is only valid for the framework itself
         //String propertiesPath = System.getProperty("user.dir") + "/asf-oes/config.properties";
@@ -477,6 +494,13 @@ public class Utils {
             sleepms(800);
         }
         while (isElementVisibleAngularMS(By.id("loader-1"), 5));
+    }
+
+    public void waitPvuLoads2() {
+        if (isElementVisibleAngularMS(By.id("loader-1"), 5)) {
+            System.out.println("Waiting 800ms until page loads");
+            sleepms(800);
+        }
     }
 
     public void waitForInvisible(By element) {

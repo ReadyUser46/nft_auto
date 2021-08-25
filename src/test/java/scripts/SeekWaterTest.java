@@ -42,7 +42,7 @@ public class SeekWaterTest extends BaseTest {
 
         //pvu map
         pvuFarmPage.clickMap();
-        pvuFarmPage.loopCells();
+        pvuFarmPage.loopCells(Integer.parseInt(utils.readProperty("lastCell")));
 
         System.out.println("tork");
     }
@@ -52,5 +52,7 @@ public class SeekWaterTest extends BaseTest {
     public void tearDown() {
         super.tearDown();
         System.out.println(pvuFarmPage.getPlantsCounter() + " Plants checked!");
+        System.out.println("Last cell checked = " + pvuFarmPage.getLastCell());
+        utils.setProperty("lastCell", String.valueOf(pvuFarmPage.getLastCell()));
     }
 }

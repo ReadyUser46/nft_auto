@@ -1,6 +1,5 @@
 package pageobjects;
 
-import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -15,10 +14,11 @@ import java.util.logging.Logger;
 
 public class PvuFarmPage extends Utils {
 
-    private static final int cellStart = 693;
-    private static final int cellLimit = 600;
+    private static final int cellLimit = 700;
+    private int cellStart = 928;
     private static final int waterLimit = 90;
     private int plantsCounter = 0;
+    private int lastCell;
     private Logger logger;
 
     //Constructors
@@ -46,7 +46,6 @@ public class PvuFarmPage extends Utils {
     private static final String TEXT_OWNER_TITLE_XPATH = "//*[@class='owner-title']";
 
 
-
     //CHECKS
     private static void waitForUserInput() {
         Scanner scanner = new Scanner(System.in);
@@ -62,50 +61,20 @@ public class PvuFarmPage extends Utils {
         }
     }
 
-    @Step("Visiting Land")
-    public void clickVisit() {
-        waitForClickable(By.xpath(BUTTON_VISIT_XPATH));
-        getVisitButton().click();
-        waitForJSandJqueryFinish();
-    }
-
-    @Step("Use Water")
-    public void clickUseWater() {
-        waitForClickable(By.xpath(BUTTON_USE_XPATH));
-        getUseButton().click();
-        waitForJSandJqueryFinish();
-    }
-
     //ACTIONS
-    @Step("Click on map")
-    public void clickMap() {
-        try {
-            waitForClickable(By.xpath(BUTTON_MAP_XPATH));
-            getMapButton().click();
-            waitForJSandJqueryFinish();
-        } catch (ElementClickInterceptedException e) {
-            logger.severe(String.format(" MAP MAP MAP MAP MAP\nclick intercepeted in --> %s", "click map"));
-            espera(8); //time to solve the issue before script tears down
-            getMapButton().click();
-        }
-
-    }
-
-    @Step("Loop through cells")
-    public void loopCells() {
+    public void loopCells(int lastCellCheced) {
         List<WebElement> cells;
         int numCells = driver.findElements(By.xpath(CELLS_MAP_XPATH)).size();
-
+        cellStart = lastCellCheced;
         try {
             for (int i = cellStart; i > cellLimit; i--) {
                 logger.info(String.format("Looping through CELL --> %s/%s ", i, numCells));
                 cells = driver.findElements(By.xpath(CELLS_MAP_XPATH));
                 cells.get(i).click();
-                waitPvuLoads();
+                lastCell = i;
                 waitForVisible(By.xpath(POPUP_SINGLE_CELL_XPATH));
                 if (isElementLocated(By.xpath(BUTTON_VISIT_XPATH), 1)) {
                     clickVisit();
-                    waitPvuLoads();
                     checkPages();
                 } else {
                     driver.navigate().refresh();
@@ -122,7 +91,8 @@ public class PvuFarmPage extends Utils {
         for (int j = 0; j <= getNumPages() - 1; j++) {
             logger.info(String.format("Looping through PAGE --> %s/%s ", j + 1, getNumPages()));
             checkWater();
-            if (j == getNumPages() || getNumPages() == 1) { /*dont click next page if current page is last one or there's only one page*/
+            if (j == (getNumPages() - 1) || getNumPages() == 1) { /*dont click next page if current page is last one or there's only one page*/
+                System.out.println("last page... [break]");
                 break;
             } else clickNextPage();
         }
@@ -143,8 +113,8 @@ public class PvuFarmPage extends Utils {
                             "[POSITIVE] WATER = %s in PLANT %s| Under limite = %s", waters.get(k).getText(), k, waterLimit));
                     scrollToElement(waters.get(k));
                     waters.get(k).click();
-                    clickUseWater();
-                    //waitForUserInput(); //todo manually click background when congrants windows is displayed
+                    //clickUseWater();
+                    //todo manually click background when congrants windows is displayed
                 }
             }
         } catch (StaleElementReferenceException e) {
@@ -154,14 +124,41 @@ public class PvuFarmPage extends Utils {
 
     public void clickNextPage() {
         try {
+            System.out.println("clicking next");
             waitForClickable(By.xpath(BUTTON_NEXT_PAGE_XPATH));
             getNextPageButton().click();
             waitForJSandJqueryFinish(); //todo wait invisible loading
-            waitPvuLoads();
+            waitPvuLoads2();
         } catch (ElementClickInterceptedException e) {
             logger.severe(String.format(" click intercepeted in --> %s", "click next"));
 
         }
+    }
+
+    public void clickMap() {
+        try {
+            System.out.println("clicking map");
+            waitForClickable(By.xpath(BUTTON_MAP_XPATH));
+            getMapButton().click();
+            waitForJSandJqueryFinish();
+        } catch (ElementClickInterceptedException e) {
+            logger.severe(String.format(" MAP MAP MAP MAP MAP\nclick intercepeted in --> %s", "click map"));
+            espera(8); //time to solve the issue before script tears down
+            getMapButton().click();
+        }
+
+    }
+
+    public void clickVisit() {
+        waitForClickable(By.xpath(BUTTON_VISIT_XPATH));
+        getVisitButton().click();
+        waitForJSandJqueryFinish();
+    }
+
+    public void clickUseWater() {
+        waitForClickable(By.xpath(BUTTON_USE_XPATH));
+        getUseButton().click();
+        waitForJSandJqueryFinish();
     }
 
     //AUX METHODS
@@ -205,5 +202,7 @@ public class PvuFarmPage extends Utils {
         return plantsCounter;
     }
 
-
+    public int getLastCell() {
+        return lastCell;
+    }
 }
