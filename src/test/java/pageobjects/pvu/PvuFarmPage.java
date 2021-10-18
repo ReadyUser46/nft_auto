@@ -1,4 +1,4 @@
-package pageobjects;
+package pageobjects.pvu;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
