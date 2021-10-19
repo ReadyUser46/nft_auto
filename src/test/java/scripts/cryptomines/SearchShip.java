@@ -3,14 +3,15 @@ package scripts.cryptomines;
 import baseobjects.BaseTest;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import pageobjects.cryptomines.MarketPage;
 import pageobjects.metamask.MetamaskPage;
 import pageobjects.pvu.PvuFarmPage;
 import pageobjects.pvu.PvuLoginPage;
 
 public class SearchShip extends BaseTest {
 
-    private static final String testCaseName = "Check Status";
-    private static final String targetUrl = "";
+    private static final String testCaseName = "Search Ship";
+    private static final String targetUrl = "https://play.cryptomines.app/";
     private static final Integer explicitWait = 1;
     private PvuFarmPage pvuFarmPage;
 
@@ -19,13 +20,18 @@ public class SearchShip extends BaseTest {
     }
 
     @Test
-    public void seekWater() {
+    public void searchShip() {
         MetamaskPage metamaskPage = new MetamaskPage(getSetupWebDriverObject());
+        MarketPage cmmarket = new MarketPage(getSetupWebDriverObject());
         PvuLoginPage pvuLoginPage = new PvuLoginPage(getSetupWebDriverObject());
         pvuFarmPage = new PvuFarmPage(getSetupWebDriverObject());
 
-        //login pvu farm
-        pvuLoginPage.goToPvuFarm();
+        //login metamask
+        metamaskPage.loginMetamask();
+
+        //login CryptoMines
+        cmmarket.goToPvuFarm(targetUrl);
+
         pvuLoginPage.loginPvuFarm();
 
         //connect metamask

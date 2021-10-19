@@ -37,6 +37,7 @@ public class BaseTest extends SetupWebdriver {
     public void setup() {
         super.setup();
         utils = new Utils(this);
+        driver.manage().window().maximize();
     }
 
     @AfterMethod(alwaysRun = true)

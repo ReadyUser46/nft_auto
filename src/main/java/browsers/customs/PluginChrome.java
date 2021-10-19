@@ -10,7 +10,9 @@ public class PluginChrome implements Browser {
 
     public PluginChrome() {
         //chromeOptions.addExtensions(new File("src/main/resources/mtmsk_10_0_2_0.crx"));
-        chromeOptions.addArguments("user-data-dir=C:\\Users\\blackout\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 2");
+        chromeOptions.addArguments("user-data-dir=C:\\Users\\blackout\\AppData\\Local\\Google\\Chrome\\User Data");
+        chromeOptions.addArguments("--profile-directory=Profile 2");
+
     }
 
     @Override
