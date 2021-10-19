@@ -10,7 +10,7 @@ import pageobjects.pvu.PvuLoginPage;
 public class SearchShip extends BaseTest {
 
     private static final String testCaseName = "Check Status";
-    private static final String targetUrl = "https://marketplace.plantvsundead.com/farm#/farm";
+    private static final String targetUrl = "";
     private static final Integer explicitWait = 1;
     private PvuFarmPage pvuFarmPage;
 
@@ -23,9 +23,6 @@ public class SearchShip extends BaseTest {
         MetamaskPage metamaskPage = new MetamaskPage(getSetupWebDriverObject());
         PvuLoginPage pvuLoginPage = new PvuLoginPage(getSetupWebDriverObject());
         pvuFarmPage = new PvuFarmPage(getSetupWebDriverObject());
-
-        //login metamask
-        metamaskPage.loginMetamask();
 
         //login pvu farm
         pvuLoginPage.goToPvuFarm();
