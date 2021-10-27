@@ -233,7 +233,7 @@ public class Utils {
         }
     }
 
-    protected void espera(int s) {
+    public void espera(int s) {
         try {
             Thread.sleep(1000 * s);
         } catch (Exception e) {
@@ -241,7 +241,7 @@ public class Utils {
         }
     }
 
-    protected void sleepms(int ms) {
+    public void sleepms(int ms) {
         try {
             Thread.sleep(ms);
         } catch (Exception e) {
@@ -249,7 +249,7 @@ public class Utils {
         }
     }
 
-    protected void espera() {
+    public void espera() {
         espera(1);
     }
 
