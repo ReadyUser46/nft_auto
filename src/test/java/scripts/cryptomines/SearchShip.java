@@ -1,12 +1,12 @@
 package scripts.cryptomines;
 
-import baseobjects.BaseTest;
+import baseobjects.CryptominesBase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import pageobjects.cryptomines.MarketPage;
 import pageobjects.metamask.MetamaskPage;
 
-public class SearchShip extends BaseTest {
+public class SearchShip extends CryptominesBase {
 
     private static final String testCaseName = "Search Ship";
     private static final String targetUrl = "https://play.cryptomines.app/marketplace/spaceships/cryptomines";

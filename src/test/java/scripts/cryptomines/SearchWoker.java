@@ -1,20 +1,20 @@
 package scripts.cryptomines;
 
-import baseobjects.BaseTest;
+import baseobjects.CryptominesBase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 import pageobjects.metamask.MetamaskPage;
 import pageobjects.pvu.PvuFarmPage;
 import pageobjects.pvu.PvuLoginPage;
 
-public class SearchWorder extends BaseTest {
+public class SearchWoker extends CryptominesBase {
 
     private static final String testCaseName = "Check Status";
     private static final String targetUrl = "https://marketplace.plantvsundead.com/farm#/farm";
     private static final Integer explicitWait = 1;
     private PvuFarmPage pvuFarmPage;
 
-    public SearchWorder() {
+    public SearchWoker() {
         super(testCaseName);
     }
 

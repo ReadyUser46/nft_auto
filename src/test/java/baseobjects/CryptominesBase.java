@@ -5,7 +5,7 @@ import org.testng.annotations.BeforeMethod;
 import setup.SetupWebdriver;
 import utils.Utils;
 
-public class BaseTest extends SetupWebdriver {
+public class CryptominesBase extends SetupWebdriver {
 
     private static final String browerName = "pluginChrome";
     private static final String mtmskUrl = "chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/popup.html";
@@ -15,7 +15,7 @@ public class BaseTest extends SetupWebdriver {
     /**
      * Contructor for metamask login
      */
-    public BaseTest(String testCaseName) {
+    public CryptominesBase(String testCaseName) {
         super();
         setBrowserName(browerName);
         setTestCaseName(testCaseName);
@@ -25,7 +25,7 @@ public class BaseTest extends SetupWebdriver {
     /**
      * Default login
      */
-    public BaseTest(String testCaseName, String targetUrl) {
+    public CryptominesBase(String testCaseName, String targetUrl) {
         super();
         setBrowserName(browerName);
         setTestCaseName(testCaseName);
