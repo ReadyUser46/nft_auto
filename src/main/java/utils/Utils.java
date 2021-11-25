@@ -448,7 +448,7 @@ public class Utils {
     public boolean isElementVisibleAngularMS(By element, int timeoutInSeconds) {
         for (int i = 0; i < timeoutInSeconds; i++) {
             if (!isElementVisibleMS(element, 200)) {
-                sleepms(200);
+                espera(1);
             } else {
                 return true;
             }
@@ -486,6 +486,11 @@ public class Utils {
 
     public void executeJS(String funcion) {
         ((JavascriptExecutor) driver).executeScript(funcion);
+    }
+
+    public void clickByJS(WebElement element) {
+        JavascriptExecutor executor = (JavascriptExecutor) driver;
+        executor.executeScript("arguments[0].click();", element);
     }
 
     public void waitPvuLoads() {

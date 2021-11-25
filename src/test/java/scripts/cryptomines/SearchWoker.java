@@ -3,14 +3,15 @@ package scripts.cryptomines;
 import baseobjects.CryptominesBase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+import pageobjects.cryptomines.MarketPage;
 import pageobjects.metamask.MetamaskPage;
 import pageobjects.pvu.PvuFarmPage;
-import pageobjects.pvu.PvuLoginPage;
 
 public class SearchWoker extends CryptominesBase {
 
-    private static final String testCaseName = "Check Status";
-    private static final String targetUrl = "https://marketplace.plantvsundead.com/farm#/farm";
+    private static final String testCaseName = "Search Worker";
+    private static final String targetUrl = "https://play.cryptomines.app/marketplace/workers";
+    private static final String STARS = "4";
     private static final Integer explicitWait = 1;
     private PvuFarmPage pvuFarmPage;
 
@@ -19,40 +20,42 @@ public class SearchWoker extends CryptominesBase {
     }
 
     @Test
-    public void seekWater() {
+    public void searchWorker() {
         MetamaskPage metamaskPage = new MetamaskPage(getSetupWebDriverObject());
-        PvuLoginPage pvuLoginPage = new PvuLoginPage(getSetupWebDriverObject());
-        pvuFarmPage = new PvuFarmPage(getSetupWebDriverObject());
+        MarketPage cmmarket = new MarketPage(getSetupWebDriverObject());
 
         //login metamask
         metamaskPage.loginMetamask();
 
-        //login pvu farm
-        pvuLoginPage.goToPvuFarm();
-        pvuLoginPage.loginPvuFarm();
+        //login CryptoMines
+        cmmarket.goToUrl(targetUrl);
 
-        //connect metamask
-        metamaskPage.connectMetamask();
+        /*connect metamask
+        metamaskPage.connectMetamask();*/
 
-        //check login puv ok
-        utils.assertTrue(pvuLoginPage.isDashBoardDisplayed(), "Verifying login succesfully done");
+        //check login ok
+        utils.assertTrue(cmmarket.isMarketDisplayed(), "Verifying login succesfully done");
 
-        //pvu farm
-        pvuLoginPage.clickFarmTab();
+        driver.manage().deleteAllCookies();
+        //select stars
+        cmmarket.selectStars(STARS);
 
-        //pvu map
-        pvuFarmPage.clickMap();
-        pvuFarmPage.loopCells(Integer.parseInt(utils.readProperty("lastCell")));
+        //check filter stars ok
+        utils.assertTrue(cmmarket.isFilterOK(STARS), "Verifying login succesfully done");
 
-        System.out.println("tork");
+        //MAIN LOOOP
+        //cmmarket.loopPages();
+
+        for (int i = 0; i <= 100; i++) {
+            cmmarket.loopWorkers4();
+        }
+
+
     }
 
     @AfterMethod(alwaysRun = true)
     @Override
     public void tearDown() {
         super.tearDown();
-        System.out.println(pvuFarmPage.getPlantsCounter() + " Plants checked!");
-        System.out.println("Last cell checked = " + pvuFarmPage.getLastCell());
-        utils.setProperty("lastCell", String.valueOf(pvuFarmPage.getLastCell()));
     }
 }

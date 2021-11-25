@@ -10,7 +10,7 @@ public class SearchShip extends CryptominesBase {
 
     private static final String testCaseName = "Search Ship";
     private static final String targetUrl = "https://play.cryptomines.app/marketplace/spaceships/cryptomines";
-    private static final String STARS = "2";
+    private static final String STARS = "3";
     private static final Integer explicitWait = 1;
 
     public SearchShip() {

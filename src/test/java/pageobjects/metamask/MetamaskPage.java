@@ -12,7 +12,7 @@ public class MetamaskPage extends Utils {
     private static final String INPUT_PASS_ID = "password";
 
     //LOCATORS - XPATH
-    private static final String BUTTON_UNLOCK_XPATH = "//*[@type='submit']";
+    private static final String BUTTON_UNLOCK_XPATH = "//button[text()='Desbloquear']";
     private static final String BUTTON_NEXT_XPATH = "//button[text()='Siguiente']";
     private static final String BUTTON_CONNECT_XPATH = "//button[text()='Conectar']";
     private static final String BUTTON_SIGN_XPATH = "//button[text()='Firmar']";

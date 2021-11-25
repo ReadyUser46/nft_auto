@@ -8,7 +8,7 @@ import utils.Utils;
 public class CryptominesBase extends SetupWebdriver {
 
     private static final String browerName = "pluginChrome";
-    private static final String mtmskUrl = "chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/popup.html";
+    private static final String mtmskUrl = "chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/popup.html#unlock";
     private String targetUrl;
     protected Utils utils;
 
